@@ -197,24 +197,113 @@ Enter the trajectory filename when prompted. The arm enables torque, executes th
 
 ## Vision System
 
+The live game first uses the four calibrated corners to transform the camera image into a top down square view of the board.
+
+The transformed board is split into nine cells. To reduce interference from the grid lines, only the inner region of each cell is analyzed.
+
+Each cell is converted from BGR to HSV color space and classified using color thresholds:
+
+- A sufficiently large **white region** is classified as `O`.
+- A sufficiently large **black region** is classified as `X`.
+- If neither threshold is reached, the cell is classified as `empty`.
+
+Morphological filtering and contour area checks are used to reduce small visual noise before a symbol is accepted.
+
 ---
 
 ## Game Logic
+
+The game checks the eight standard TicTacToe winning combinations:
+
+```text
+Rows:      0-1-2   3-4-5   6-7-8
+Columns:   0-3-6   1-4-7   2-5-8
+Diagonals: 0-4-8   2-4-6
+```
+
+After each board check phase, the program returns one of three states:
+
+- `WIN`
+- `DRAW`
+- `ONGOING`
+
+When a winner is detected, the corresponding winning cells are highlighted in the visual interface.
 
 ---
 
 ## Physical Game Sequence
 
+The current physical demonstration in `cps_maingame.py` uses a timed sequence of player turns, board checks, and prerecorded robot actions:
+
+1. Player turn: 10 seconds
+2. Check board: 3 seconds
+3. Robot executes `cps_o_pos4.txt`: 20 seconds
+4. Check board: 3 seconds
+5. Player turn: 10 seconds
+6. Check board: 3 seconds
+7. Robot executes `cps_o_pos5.txt`: 20 seconds
+8. Check board: 3 seconds
+9. Player turn: 10 seconds
+10. Final board check: 3 seconds
+
+The robot trajectory runs in a separate thread so the camera feed and user interface remain responsive while the arm is moving.
+
 ---
 
 ## Running the Main Game
 
+Start the physical version with:
+
+```bash
+python cps_maingame.py
+```
+
+The main menu provides three options:
+
+- **START GAME**
+- **RECALIBRATE BOARD**
+- **EXIT**
+
 ### Controls
+
+| Key | Action |
+| --- | --- |
+| `S` | Skip the current timed step |
+| `C` | Recalibrate the board during the game |
+| `R` | Replay after the game has ended |
+| `Q` | Return to the menu or exit the current screen |
 
 ---
 
 ## Offline Version
 
+The project includes `cps_maingameoffline.py`, a standalone version of the game called **Tic Tac Clash**.
+
+Run it with:
+
+```bash
+python cps_maingameoffline.py
+```
+
+The offline version includes:
+
+- Player selection between `X` and `O`
+- `X` always taking the first turn
+- Adjustable turn duration from 1 to 30 seconds
+- Mouse based player moves
+- Random robot moves into available cells
+- Robot thinking animation
+- Win and draw detection
+- Winning line visualization
+- Replay and main menu options
+
+This version is useful for testing the user interface and game state logic without connecting the robotic hardware.
+
 ---
 
 ## Acknowledgements
+
+- Developed as part of the **Embedded Systems, Cyber-Physical Systems and Robotics (INHN0018)** course at the Technical University of Munich (Technische Universität München).
+- Built using OpenCV for computer vision and board-state recognition.
+- Built using the LeRobot framework for SO-101 robotic arm control.
+- Pygame is used for the standalone TicTacToe interface.
