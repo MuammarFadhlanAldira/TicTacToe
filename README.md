@@ -13,12 +13,24 @@ The main goal is to demonstrate how a camera and robotic arm can work together i
 ---
 
 ## Table of Contents
-* [TicTacToe Robot](#-tictactoe-robot)
-* [Features](#-features)
-* [Hardware](#-hardware)
-* [Software](#-software)
-* [Project Files](#-project-files)
-* [Dependencies & Setup](#️-dependencies--setup)
+* [TicTacToe Robot](#tictactoe-robot)
+* [Project Structure](#project-structure)
+* [Features](#features)
+* [Hardware](#hardware)
+* [Software](#software)
+* [Dependencies & Setup](#dependencies--setup)
+    * [Install Python dependencies](#install-python-dependencies)
+    * [Configure the SO-101 arm](#configure-the-so-101-arm)
+    * [Connect the camera](#connect-the-camera)
+    * [Calibrate the physical board](#calibrate-the-physical-board)
+    * [Prepare robot trajectories](#prepare-robot-trajectories)
+* [Vision System](#vision-system)
+* [Game Logic](#game-logic)
+* [Physical Game Sequence](#physical-game-sequence)
+* [Running the Main Game](#running-the-main-game)
+    * [Controls](#controls)
+* [Offline Version](#offline-version)
+* [Acknowledgements](#acknowledgements)
 
 ---
 
@@ -53,7 +65,7 @@ The project is organized into Python source files for the game, robot control, a
 | `cps_x_pos3.txt` | Recorded SO-101 trajectory for an `X` placement sequence. |
 | `cps_o_pos4.txt` | Recorded SO-101 trajectory used by the main game for an `O` placement. |
 | `cps_o_pos5.txt` | Recorded SO-101 trajectory used by the main game for an `O` placement. |
-| `board_corners.json` | Generated after camera calibration and stores the four selected board corners. |
+
 
 ---
 
@@ -103,8 +115,106 @@ The current robot configuration uses the serial port `COM5` and the LeRobot foll
 
 ---
 
-## Project Files
+## Dependencies & Setup
+
+### Install Python dependencies
+
+The project requires the Python packages used by the scripts:
+
+```bash
+pip install numpy opencv-python pygame
+```
+
+LeRobot must also be installed and configured separately so that the following imports are available:
+
+```python
+from lerobot.robots.so_follower import SO101Follower, SO101FollowerConfig
+```
+
+### Configure the SO-101 arm
+
+The robot scripts currently use:
+
+```python
+FOLLOWER_PORT = "COM5"
+FOLLOWER_ID = "my_follower_arm"
+```
+
+Update these values if the arm is connected through a different serial port or uses a different calibration ID.
+
+The robot should already be calibrated before starting the game because the scripts connect using:
+
+```python
+robot.connect(calibrate=False)
+```
+
+### Connect the camera
+
+The main game currently uses camera index `0`:
+
+```python
+CAMERA_INDEX = 0
+```
+
+If another camera is being used, change this value in `cps_maingame.py`.
+
+### Calibrate the physical board
+
+Before the first game, the program needs the position of the physical TicTacToe board.
+
+1. Point the camera at the complete board.
+2. Start calibration from the main menu.
+3. Press `SPACE`, `ENTER`, or `C` to capture the camera frame.
+4. Click the four corners in this exact order:
+   - Top left
+   - Top right
+   - Bottom right
+   - Bottom left
+5. Press `Q` after all four points have been selected.
+6. The coordinates are saved automatically to `board_corners.json`.
+
+The calibration is then used to calculate a perspective transformation and generate a square 300 × 300 pixel board image for cell recognition.
+
+### Prepare robot trajectories
+
+Robot moves are stored as recorded joint position sequences. To create a new trajectory, run:
+
+```bash
+python cps_recordarm.py
+```
+
+The script disables motor torque so the arm can be moved manually. It then records the six joint values every `0.05` seconds and saves them as CSV data inside a `.txt` file.
+
+To test a recorded trajectory independently, run:
+
+```bash
+python cps_moverobot.py
+```
+
+Enter the trajectory filename when prompted. The arm enables torque, executes the recorded positions at 20 Hz, disables torque, and disconnects when finished.
 
 ---
 
-## Dependencies & Setup
+## Vision System
+
+---
+
+## Game Logic
+
+---
+
+## Physical Game Sequence
+
+---
+
+## Running the Main Game
+
+### Controls
+
+---
+
+## Offline Version
+
+---
+
+## Acknowledgements
