@@ -73,7 +73,7 @@ The project is organized into Python source files for the game, robot control, a
 |---|---|
 | **Live board detection** | Using a camera and OpenCV. |
 | **Perspective correction** | Transforms the detected board into a normalized 300 × 300 pixel view. |
-| **Automatic cell classification** | Classifies cells as white `O`, black `X`, or empty. |
+| **Automatic cell classification** | Classifies cells as black `O`, yellow `X`, or empty. |
 | **Win and draw detection** | Detects wins and draws across all rows, columns, and diagonals. |
 | **SO-101 robotic arm control** | Controls the SO-101 robotic arm using the LeRobot framework. |
 | **Recorded trajectory playback** | Enables repeatable physical robot movements using recorded trajectories. |
@@ -91,8 +91,8 @@ The project is organized into Python source files for the game, robot control, a
 - SO-101 follower robotic arm
 - Camera connected to the host computer
 - Physical 3×3 TicTacToe board
-- White `O` game pieces
-- Black `X` game pieces
+- black `O` game pieces
+- yellow `X` game pieces
 - Computer for vision processing and robot control
 
 The current robot configuration uses the serial port `COM5` and the LeRobot follower ID `my_follower_arm`. These values can be changed in the Python scripts to match the local setup.
@@ -201,8 +201,8 @@ The transformed board is split into nine cells. To reduce interference from the 
 
 Each cell is converted from BGR to HSV color space and classified using color thresholds:
 
-- A sufficiently large **white region** is classified as `O`.
-- A sufficiently large **black region** is classified as `X`.
+- A sufficiently large **black region** is classified as `O`.
+- A sufficiently large **yellow region** is classified as `X`.
 - If neither threshold is reached, the cell is classified as `empty`.
 
 Morphological filtering and contour area checks are used to reduce small visual noise before a symbol is accepted.
