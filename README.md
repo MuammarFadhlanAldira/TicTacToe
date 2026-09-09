@@ -31,6 +31,7 @@ The main goal is to demonstrate how a camera and robotic arm can work together i
 * [Running the Main Game](#running-the-main-game)
     * [Main Game Controls](#main-game-controls)
 * [Robot Utility Scripts](#robot-utility-scripts)
+* [Demo Video](#demo-video)
 * [Acknowledgements](#acknowledgements)
 ---
 
@@ -463,6 +464,15 @@ Run:
 ```bash
 python move_robot.py
 ```
+
+---
+
+## Demo Video
+
+A demonstration of the physical TicTacToe Robot system can be viewed here:
+
+https://youtu.be/q9TCwiyJYFE
+
 
 ---
 
